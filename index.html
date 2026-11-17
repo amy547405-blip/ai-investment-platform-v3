@@ -194,6 +194,18 @@ function editBatchPrompt(code,id){
  if(Number(p)<0||Number(l)<0){alert('比例不能小于0');return}
  b.profitPct=Number(p);b.lossPct=Number(l);b.alertState='';save();render();checkAllAlerts();
 }
+function removeFund(code){
+  const index=funds.findIndex(f=>String(f.code)===String(code));
+  if(index<0){alert('未找到这只基金');return}
+  const f=funds[index];
+  const batchCount=(f.batches||[]).length;
+  const message=`确定从自选列表中移除「${f.name}（${f.code}）」吗？\n该基金的${batchCount}个买入批次及基金备注也会一并删除，此操作不可撤销。`;
+  if(!confirm(message))return;
+  funds.splice(index,1);
+  save();
+  render();
+  $('fundStatus').textContent=`已移除基金：${f.name}（${f.code}）`;
+}
 function removeBatch(code,id){const f=funds.find(x=>x.code===code);if(!f)return;if(!confirm('确定删除该买入批次？'))return;f.batches=f.batches.filter(b=>b.id!==id);save();render()}
 function logAlert(msg){
  let logs=JSON.parse(localStorage.getItem('aip_fund_alert_log_v24')||'[]');logs.unshift(new Date().toLocaleString('zh-CN')+' · '+msg);logs=logs.slice(0,100);localStorage.setItem('aip_fund_alert_log_v24',JSON.stringify(logs));
